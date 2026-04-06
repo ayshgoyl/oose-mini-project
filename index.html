@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RLMS - Return Request & Inspection</title>
+    <!-- Use Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+
+    <!-- 1. LOGIN VIEW -->
+    <div id="login-view" class="login-container">
+        <div class="login-card">
+            <div class="logo" style="justify-content: center; margin-bottom: 24px;">
+                <div class="logo-icon"></div>
+                <h2>RLMS Portal</h2>
+            </div>
+            <p>Welcome back! Please choose your login role.</p>
+            
+            <button id="btn-login-staff" class="login-btn">
+                <span>🔧</span> Login as Warehouse Staff
+            </button>
+            <button id="btn-login-customer" class="login-btn">
+                <span>👤</span> Login as Customer (Sarah Jenkins)
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. STAFF VIEW -->
+    <div id="staff-view" class="dashboard-layout util-hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h2>RLMS</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active">
+                    <span class="icon">📦</span> Returns
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">📊</span> Analytics
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">⚙️</span> Settings
+                </a>
+            </nav>
+            <div class="user-profile">
+                <img src="https://i.pravatar.cc/150?img=11" alt="User Profile" class="avatar">
+                <div class="user-info">
+                    <span class="name">Alex Carter</span>
+                    <span class="role">Warehouse Staff #S-842</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header Metrics -->
+            <header class="top-header">
+                <div style="display: flex; align-items: center;">
+                    <h1>Product Inspection Module</h1>
+                    <button class="logout-btn btn-logout">Logout</button>
+                </div>
+                <div class="sustainability-metrics">
+                    <div class="metric-card primary">
+                        <span class="label">Pending Returns</span>
+                        <span class="value" id="pending-count">0</span>
+                    </div>
+                    <div class="metric-card success">
+                        <span class="label">Items Recycled</span>
+                        <span class="value" id="recycled-count">142</span>
+                    </div>
+                    <div class="metric-card warning">
+                        <span class="label">Items Reused</span>
+                        <span class="value" id="reused-count">89</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-split">
+                <!-- Return Requests List -->
+                <section class="requests-section">
+                    <div class="section-header">
+                        <h2>Pending Requests</h2>
+                        <div class="search-bar">
+                            <input type="text" placeholder="Search ID or Customer...">
+                        </div>
+                    </div>
+                    <div class="requests-list" id="requests-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+
+                <!-- Inspection Panel -->
+                <section class="inspection-section" id="inspection-panel">
+                    <div class="empty-state" id="empty-state">
+                        <div class="empty-icon">📂</div>
+                        <h3>Select a Request</h3>
+                        <p>Choose a return request from the list to begin inspection.</p>
+                    </div>
+                    
+                    <div class="inspection-form util-hidden" id="inspection-form">
+                        <div class="panel-header">
+                            <h2>Inspection Details</h2>
+                            <span class="status-badge pending" id="current-status">Pending</span>
+                        </div>
+
+                        <!-- Product & Customer Info -->
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <h3>Product</h3>
+                                <div class="product-info-wrap">
+                                    <img src="" alt="Product" id="detail-image" class="detail-product-img">
+                                    <div>
+                                        <h4 id="detail-product-name">Product Name</h4>
+                                        <p class="meta" id="detail-return-reason">Return Reason</p>
+                                        <p class="meta">Serial: <span id="detail-serial"></span></p>
+                                        <p class="meta">Price: <strong id="detail-price"></strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <h3>Customer & Purchase</h3>
+                                <p><strong id="detail-customer-name">Name</strong></p>
+                                <p class="meta" id="detail-customer-contact">Contact</p>
+                                <br>
+                                <p class="meta">Purchased: <strong id="detail-purchase-date"></strong></p>
+                            </div>
+                            <div class="info-card">
+                                <h3>Logistics & Finance</h3>
+                                <p class="meta">Requested: <strong id="detail-request-date"></strong></p>
+                                <p class="meta">Carrier: <strong id="detail-carrier"></strong></p>
+                                <p class="meta">Tracking: <span id="detail-tracking"></span></p>
+                                <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);">
+                                    <p class="meta" style="color: var(--text-main);">Refund Est: <strong id="detail-refund" style="color: var(--success);"></strong></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Decision Form -->
+                        <form id="decision-form" class="decision-form">
+                            <div class="form-group">
+                                <label>1. Assess Product Condition</label>
+                                <div class="radio-group condition-group">
+                                    <label class="radio-card">
+                                        <input type="radio" name="condition" value="Good" required>
+                                        <div class="card-content">
+                                            <span>Good</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="condition" value="Damaged">
+                                        <div class="card-content">
+                                            <span>Damaged</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="condition" value="Defective">
+                                        <div class="card-content">
+                                            <span>Defective</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="condition" value="End-of-Life">
+                                        <div class="card-content">
+                                            <span>End-of-Life</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>2. Decide Next Action (Refund automatic)</label>
+                                <div class="radio-group action-group">
+                                    <label class="radio-card action reuse">
+                                        <input type="radio" name="action" value="Reuse" required>
+                                        <div class="card-content">
+                                            <span>♻️ Reuse</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-card action repair">
+                                        <input type="radio" name="action" value="Repair">
+                                        <div class="card-content">
+                                            <span>🔧 Repair</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-card action recycle">
+                                        <input type="radio" name="action" value="Recycle">
+                                        <div class="card-content">
+                                            <span>🌿 Recycle</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-card action dispose">
+                                        <input type="radio" name="action" value="Dispose">
+                                        <div class="card-content">
+                                            <span>🗑️ Dispose</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <div class="meta-info">
+                                    <small id="inspection-date"></small><br>
+                                    <small>Inspector: S-842</small>
+                                </div>
+                                <button type="submit" class="btn-primary">Submit Inspection & Update Status</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- 3. CUSTOMER VIEW -->
+    <div id="customer-view" class="dashboard-layout util-hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h2>RLMS</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active">
+                    <span class="icon">📦</span> My Returns
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">👤</span> Profile
+                </a>
+            </nav>
+            <div class="user-profile">
+                <img src="https://i.pravatar.cc/150?img=5" alt="User Profile" class="avatar">
+                <div class="user-info">
+                    <span class="name">Sarah Jenkins</span>
+                    <span class="role">Customer</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header Metrics -->
+            <header class="top-header">
+                <div style="display: flex; align-items: center;">
+                    <h1>My Returns Dashboard</h1>
+                    <button class="logout-btn btn-logout">Logout</button>
+                </div>
+                <div class="sustainability-metrics">
+                    <div class="metric-card primary">
+                         <span class="label">Total Returns</span>
+                         <span class="value" id="customer-total-returns">1</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="customer-portal" id="customer-portal-content">
+                <!-- Javascript will render Customer return cards here -->
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
