@@ -61,6 +61,25 @@ let metrics = {
     repaired: 12
 };
 
+let inventoryDatabase = [
+    {
+        id: "INV-1001",
+        productName: "iPhone 15 Pro - Graphite",
+        category: "Electronics",
+        condition: "New",
+        quantity: 5,
+        source: "Supplier"
+    },
+    {
+        id: "INV-1002",
+        productName: "Breville Bambino Plus",
+        category: "Home Appliances",
+        condition: "Refurbished",
+        quantity: 2,
+        source: "Return - Repair"
+    }
+];
+
 let currentSelectedId = null;
 
 // Routing DOM Elements
@@ -89,6 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => switchView('login'));
     });
 
+    // Setup staff navigation events
+    document.getElementById('nav-returns').addEventListener('click', () => switchStaffTab('returns'));
+    document.getElementById('nav-inventory').addEventListener('click', () => switchStaffTab('inventory'));
+
     // Run initial renders without showing specific views yet
     updateStaffMetrics();
     renderStaffPendingList();
@@ -108,6 +131,7 @@ function switchView(target) {
         viewLogin.classList.remove('util-hidden');
     } else if (target === 'staff') {
         viewStaff.classList.remove('util-hidden');
+        switchStaffTab('returns'); // Ensure correct tab layout is visible
         renderStaffPendingList();
         updateStaffMetrics();
     } else if (target === 'customer') {
@@ -115,6 +139,41 @@ function switchView(target) {
         renderCustomerPortal();
     }
 }
+
+function switchStaffTab(tab) {
+    document.getElementById('nav-returns').classList.remove('active');
+    document.getElementById('nav-inventory').classList.remove('active');
+    document.getElementById('returns-module').classList.add('util-hidden');
+    document.getElementById('inventory-module').classList.add('util-hidden');
+
+    if (tab === 'returns') {
+        document.getElementById('nav-returns').classList.add('active');
+        document.getElementById('returns-module').classList.remove('util-hidden');
+    } else if (tab === 'inventory') {
+        document.getElementById('nav-inventory').classList.add('active');
+        document.getElementById('inventory-module').classList.remove('util-hidden');
+        renderInventoryList();
+    }
+}
+
+function renderInventoryList() {
+    const listEl = document.getElementById('inventory-list');
+    listEl.innerHTML = '';
+    inventoryDatabase.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'info-card inventory-card';
+        card.innerHTML = `
+            <h3>${item.productName}</h3>
+            <span class="status-badge" style="background: rgba(99, 102, 241, 0.1); color: var(--brand); display: inline-block; margin-bottom: 12px;">${item.category}</span>
+            <p style="color: var(--text-main); font-weight: 500;">ID: ${item.id}</p>
+            <p class="meta" style="margin-bottom: 4px;">Condition: ${item.condition}</p>
+            <p class="meta">Source: ${item.source}</p>
+            <h2 style="margin-top: 16px;">Qty: ${item.quantity}</h2>
+        `;
+        listEl.appendChild(card);
+    });
+}
+
 
 // --- WAREHOUSE STAFF LOGIC ---
 function updateStaffMetrics() {
@@ -195,8 +254,32 @@ decisionForm.addEventListener('submit', (e) => {
     // Process core state update
     const reqIndex = returnsDatabase.findIndex(r => r.id === currentSelectedId);
     if (reqIndex > -1) {
+        const req = returnsDatabase[reqIndex];
         // Change status from pending to processed format
-        returnsDatabase[reqIndex].status = `Processed - Action: ${selectedAction}`;
+        req.status = `Processed - Action: ${selectedAction}`;
+        
+        // Update Inventory if item is reused or repaired
+        if (selectedAction === 'Reuse' || selectedAction === 'Repair') {
+            const conditionMap = {
+                'Reuse': 'Open Box',
+                'Repair': 'Refurbished'
+            };
+            const updateCondition = conditionMap[selectedAction];
+            
+            const existingItem = inventoryDatabase.find(i => i.productName === req.productName && i.condition === updateCondition);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                inventoryDatabase.push({
+                    id: `INV-${Date.now().toString().slice(-4)}`,
+                    productName: req.productName,
+                    category: req.category,
+                    condition: updateCondition,
+                    quantity: 1,
+                    source: `Return - ${selectedAction}`
+                });
+            }
+        }
     }
     
     // Refresh GUI smoothly

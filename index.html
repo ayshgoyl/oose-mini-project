@@ -40,8 +40,11 @@
                 <h2>RLMS</h2>
             </div>
             <nav class="nav-menu">
-                <a href="#" class="nav-item active">
+                <a href="#" class="nav-item active" id="nav-returns">
                     <span class="icon">📦</span> Returns
+                </a>
+                <a href="#" class="nav-item" id="nav-inventory">
+                    <span class="icon">📋</span> Inventory
                 </a>
                 <a href="#" class="nav-item">
                     <span class="icon">📊</span> Analytics
@@ -83,7 +86,7 @@
                 </div>
             </header>
 
-            <div class="content-split">
+            <div class="content-split" id="returns-module">
                 <!-- Return Requests List -->
                 <section class="requests-section">
                     <div class="section-header">
@@ -216,6 +219,17 @@
                     </div>
                 </section>
             </div>
+
+            <!-- Inventory View -->
+            <div class="inventory-module util-hidden" id="inventory-module" style="padding: 32px; overflow-y: auto;">
+                <div class="section-header" style="border: none; padding: 0 0 20px 0; display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Warehouse Inventory</h2>
+                </div>
+                <div class="inventory-grid" id="inventory-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
         </main>
     </div>
 

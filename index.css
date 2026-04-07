@@ -600,3 +600,36 @@ h1 {
 .util-hidden {
     display: none !important;
 }
+
+/* --- INVENTORY MODULE --- */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.inventory-card {
+    background: var(--bg-base);
+    border: 1px solid var(--border);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    transition: var(--transition);
+}
+
+.inventory-card:hover {
+    border-color: var(--brand);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.inventory-card h3 {
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.inventory-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
