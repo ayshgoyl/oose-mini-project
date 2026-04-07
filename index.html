@@ -20,14 +20,13 @@
                 <div class="logo-icon"></div>
                 <h2>RLMS Portal</h2>
             </div>
-            <p>Welcome back! Please choose your login role.</p>
-            
-            <button id="btn-login-staff" class="login-btn">
-                <span>🔧</span> Login as Warehouse Staff
-            </button>
-            <button id="btn-login-customer" class="login-btn">
-                <span>👤</span> Login as Customer (Sarah Jenkins)
-            </button>
+            <p>Welcome back! Please log in to your account.</p>
+            <form id="login-form" class="login-form">
+                <input type="text" id="login-username" class="login-input" placeholder="Username (e.g. staff or sarah)" required>
+                <input type="password" id="login-password" class="login-input" placeholder="Password (e.g. pass)" required>
+                <button type="submit" class="login-btn-submit">Login</button>
+            </form>
+            <p id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 12px; display: none;">Invalid credentials</p>
         </div>
     </div>
 

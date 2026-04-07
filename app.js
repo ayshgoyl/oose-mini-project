@@ -99,9 +99,26 @@ const customerPortalContent = document.getElementById('customer-portal-content')
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Setup login events
-    document.getElementById('btn-login-staff').addEventListener('click', () => switchView('staff'));
-    document.getElementById('btn-login-customer').addEventListener('click', () => switchView('customer'));
+    // Setup login form logic
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = document.getElementById('login-username').value.toLowerCase();
+        const password = document.getElementById('login-password').value;
+
+        // Simple mock authentication
+        if (username === 'staff' && password === 'pass') {
+            loginError.style.display = 'none';
+            switchView('staff');
+        } else if (username === 'sarah' && password === 'pass') {
+            loginError.style.display = 'none';
+            switchView('customer');
+        } else {
+            loginError.style.display = 'block';
+        }
+    });
     
     // Setup logout events
     document.querySelectorAll('.btn-logout').forEach(btn => {
